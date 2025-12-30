@@ -1,2 +1,90 @@
-# Windows-Network-Profile-Reset
-Fix Windows network name duplication (Network 2, Network 3...) by safely resetting Network Profiles and restoring adapters automatically after reboot.
+# 🛠 Windows Network Profile Reset
+
+（修正「網路 1 / 網路 2 / 網路 3…」不斷累積問題）
+
+------
+
+## 📌 專案說明（中文）
+
+當 Windows 連接不同的網路環境時，常會出現
+ 「網路 1 / 網路 2 / 網路 3…」不斷累積的情況。
+
+這通常是因為系統在登錄中保留了舊的網路設定紀錄
+ （`NetworkList\Profiles` 與 `NetworkList\Signatures`）。
+
+本工具將該處理流程**自動化、安全化、可回復化**，適合用於：
+
+- 網路名稱不斷增加
+- 網路設定異常
+- VPN / 虛擬網卡造成混亂
+- 需要快速重建乾淨網路環境
+
+📖 問題背景參考（中文說明）：
+ [https://www.ez2o.com/Blog/Post/Windows-Change-Network-Name](https://www.ez2o.com/Blog/Post/Windows-Change-Network-Name?utm_source=chatgpt.com)
+
+------
+
+## ✨ 功能特色
+
+- ✅ 自動偵測並要求系統管理員權限
+- ✅ 僅處理「目前啟用且為實體」的網路介面卡
+- ✅ 自動停用 → 清除設定 → 重開 → 自動恢復網卡
+- ✅ 使用 RunOnce，確保只執行一次
+- ✅ 具備失敗保護與提示機制
+- ✅ 不使用 `.ps1`，避免 ExecutionPolicy 問題
+- ✅ 全程可讀、可維護、可自行修改
+
+------
+
+## 🔄 執行流程說明
+
+1. 偵測並取得系統管理員權限
+2. 取得目前「啟用中且為實體」的網路介面卡
+3. 建立 `自動啟用網卡指令執行.txt`（用於標記網路介面卡狀態）
+4. 產生 `Enable-Network.cmd`（用於開機後復原）
+5. 註冊 RunOnce（下次登入自動執行）
+6. 停用網路介面卡
+7. 清除 NetworkList（Profiles / Signatures）
+8. 重新啟動系統
+9. 開機後自動啟用網路並清理暫存
+
+------
+
+## 📂 產生的檔案說明
+
+| 檔案                       | 用途                             |
+| -------------------------- | -------------------------------- |
+| `Enable-Network.cmd`       | 開機後自動啟用網卡，完成後會自刪   |
+| `自動啟用網卡指令執行.txt` | 狀態標記檔，若仍存在代表尚未完成 |
+
+------
+
+## ▶ 使用方式
+
+1. 以 **系統管理員身分** 執行：
+
+   ```
+   Reset-NetworkProfiles.bat
+   ```
+
+2. 依畫面指示操作
+
+3. 系統將重新啟動
+
+4. 登入後會自動恢復網路
+
+------
+
+## ⚠ 注意事項
+
+- 執行期間會短暫中斷網路連線
+- 適用於 Windows 10 / 11
+- 若使用 VPN / 虛擬網卡，請先確認需求
+- 若重開後狀態標記檔`(自動啟用網卡指令執行.txt)`仍存在，代表尚未完全恢復
+
+------
+
+## 📄 授權
+
+MIT License
+ 可自由使用、修改與散佈。
